@@ -3,25 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/home', function () {
-    return "ini adalah halaman home";
-});
+use App\Http\Controllers\HomepageController;
 
-Route::get('/profile', function () {
-    return "ini adalah halaman profile";
-});
-
-Route::get('/contact', function () {
-    return "ini adalah halaman contact";
-});
-
-Route::get('/ecommerce', function () {
-    return "Selamat datang di halaman e-commerce!";
-});
-
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [HomepageController::class, 'index']); 
+Route::get('products', [HomepageController::class, 'products']); 
+Route::get('product/{slug}', [HomepageController::class, 'product']); 
+Route::get('categories',[HomepageController::class, 'categories']); 
+Route::get('category/{slug}', [HomepageController::class, 'category']); 
+Route::get('cart', [HomepageController::class, 'cart']); 
+Route::get('checkout', [HomepageController::class, 'checkout']);
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
