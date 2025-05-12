@@ -1,0 +1,185 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* General styling */
+    body {
+        background: linear-gradient(
+            110deg,
+            #0d0d0d 40%,
+rgb(52, 50, 50) 50%,
+            #0d0d0d 60%
+        );
+        background-size: 200% 200%;
+        animation: shimmer 6s linear infinite;
+        color:rgb(255, 255, 255);
+        font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .carousel-img {
+    height: 700px;
+    object-fit: cover;
+    }
+
+    /* Card Styling */
+    .futuristic-card {
+        background-color: #1e1e1e;
+        border: 2px solid #2b2b2b;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .futuristic-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .futuristic-img {
+        height: 200px;
+        object-fit: cover;
+        border-radius: 12px 12px 0 0;
+        transition: transform 0.3s ease;
+    }
+
+    .futuristic-img:hover {
+        transform: scale(1.05);
+    }
+
+    .hidden {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease-out;
+    }
+
+    .show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Text Styling */
+    .futuristic-title {
+        color: #00ff9f;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .futuristic-description {
+        color: #ccc;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    /* Button Styling */
+    .futuristic-btn {
+        background-color: #00ff9f;
+        color: #101010;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .futuristic-btn:hover {
+        background-color: #00cc7a;
+        transform: translateY(-5px);
+    }
+
+    .futuristic-card:hover .futuristic-img {
+    transform: scale(1.1);
+    opacity: 0.7;
+    }
+
+    .futuristic-card:hover .futuristic-description {
+    display: block; /* tampilkan deskripsi saat hover */
+    }
+
+
+    /* Responsive Layout */
+    @media (max-width: 767px) {
+        .futuristic-card {
+            margin-bottom: 15px;
+        }
+    }
+
+  .back-to-top-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: transparent;
+    border: 3px solid #00ff9f;
+    border-radius: 50%;
+    padding: 15px;
+    color: #00ff9f;
+    font-size: 24px;
+    cursor: pointer;
+    display: none;
+    box-shadow: 0 0 15px rgba(0, 255, 159, 0.5);
+    z-index: 1050;
+    transition: all 0.3s ease;
+  }
+
+  /* Efek Hover */
+  .back-to-top-btn:hover {
+    background-color: #00ff9f;
+    color: #121212;
+    box-shadow: 0 0 30px rgba(0, 255, 159, 1);
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  /* Button Icon Style */
+  .back-to-top-btn i {
+    font-size: 20px;
+  }
+
+  /* Loading animation */
+  #preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0d0d0d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 1s ease;
+}
+
+.loader span {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #00ff9f;
+  display: inline-block;
+  animation: bounce 1.5s infinite;
+}
+
+.loader span:nth-child(2) { animation-delay: 0.1s; }
+.loader span:nth-child(3) { animation-delay: 0.2s; }
+.loader span:nth-child(4) { animation-delay: 0.3s; }
+.loader span:nth-child(5) { animation-delay: 0.4s; }
+.loader span:nth-child(6) { animation-delay: 0.5s; }
+.loader span:nth-child(7) { animation-delay: 0.6s; }
+.loader span:nth-child(8) { animation-delay: 0.7s; }
+.loader span:nth-child(9) { animation-delay: 0.8s; }
+.loader span:nth-child(10) { animation-delay: 0.9s; }
+
+#preloader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}

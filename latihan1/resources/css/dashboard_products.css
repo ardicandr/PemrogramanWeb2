@@ -1,0 +1,14 @@
+select {
+        color: #fff; /* Warna teks */
+        background-color: #333; /* Warna latar belakang */
+    }
+
+    select option {
+        color: #333; /* Warna teks */
+        background-color: #fff; /* Warna latar belakang */
+    }
+
+    select option:hover {
+        background-color: #ddd; /* Warna latar belakang saat hover */
+        color: #333; /* Warna teks saat hover */
+    }
