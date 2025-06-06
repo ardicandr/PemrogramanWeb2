@@ -3,7 +3,8 @@
 namespace App\Http\Controllers; 
  
 use Illuminate\Http\Request; 
-use App\Models\Categories; 
+use App\Models\Categories;
+use App\Http\Resources\ProductCategoryResource;
  
 class ProductCategoryController extends Controller 
 { 
@@ -38,56 +39,42 @@ class ProductCategoryController extends Controller
     */ 
    public function store(Request $request) 
    { 
-       /** 
-        * cek validasi input 
-        */ 
-       $validator = \Validator::make($request->all(), [ 
-           'name' => 'required|string|max:255', 
-           'slug' => 'required|string|max:255', 
-           'description' => 'required' 
-       ]); 
- 
-       /** 
-        * jika validasi gagal, 
-        * maka redirect kembali dengan pesan error 
-        */ 
-       if ($validator->fails()) { 
-           return redirect()->back()->with( 
-               [ 
-                   'errors'=>$validator->errors(), 
-                   'errorMessage'=>'Validasi Error, Silahkan lengkapi data terlebih dahulu' 
-               ] 
-           ); 
-       } 
- 
-       $category = new Categories; 
-       $category->name = $request->name; 
-       $category->slug = $request->slug; 
-       $category->description = $request->description; 
-       
-       if ($request->hasFile('image')) { 
-           $image = $request->file('image'); 
-           $imageName = time() . '_' . $image->getClientOriginalName(); 
-           $imagePath = $image->storeAs('uploads/categories', $imageName, 'public'); 
-           $category->image = $imagePath; 
-       } 
- 
-       $category->save(); 
- 
-       return redirect()->back() 
-           ->with( 
-               [ 
-                   'successMessage'=>'Data Berhasil Disimpan' 
-               ] 
-           ); 
-   } 
+        $validator = \Validator::make($request->all(), [ 
+            'name' => 'required|string|max:255', 
+            'slug' => 'required|string|max:255', 
+            'description' => 'required' 
+        ]); 
+    
+        //check if validation fails 
+        if ($validator->fails()) { 
+            return response()->json($validator->errors(), 422); 
+        } 
+    
+        $category = new Categories; 
+        $category->name = $request->name; 
+        $category->slug = $request->slug; 
+        $category->description = $request->description; 
+    
+        if ($request->hasFile('image')) { 
+            $image = $request->file('image'); 
+            $imageName = time() . '_' . $image->getClientOriginalName(); 
+            $imagePath = $image->storeAs('uploads/categories', $imageName, 'public'); 
+            $category->image = $imagePath; 
+        } 
+    
+        $category->save(); 
+    
+        return redirect()->route('categories.index')->with('success', 'Product Category Created Successfully');
+   }
  
    /** 
     * Display the specified resource. 
     */ 
-   public function show(string $id) 
+   public function show(string $id)
    { 
-       $category = Categories::find($id); 
+       $category = Categories::findOrFail($id); 
+
+       return new ProductCategoryResource($category, 200, 'Product Category Details', );  
    } 
  
    /** 
@@ -105,66 +92,42 @@ class ProductCategoryController extends Controller
    /** 
     * Update the specified resource in storage. 
     */ 
-   public function update(Request $request, string $id) 
+   public function update(Request $request, $id) 
    { 
-       /** 
-        * cek validasi input 
-        */ 
-       $validator = \Validator::make($request->all(), [ 
-           'name' => 'required|string|max:255', 
-           'slug' => 'required|string|max:255', 
-           'description' => 'required' 
-       ]); 
- 
-       /** 
-        * jika validasi gagal, 
-        * maka redirect kembali dengan pesan error 
-        */ 
-       if ($validator->fails()) { 
-           return redirect()->back()->with( 
-               [ 
-                   'errors'=>$validator->errors(), 
-                   'errorMessage'=>'Validasi Error, Silahkan lengkapi data terlebih dahulu' 
-               ] 
-           ); 
-       } 
- 
-       $category = Categories::find($id); 
-       $category->name = $request->name; 
-       $category->slug = $request->slug; 
-       $category->description = $request->description; 
- 
-       if ($request->hasFile('image')) { 
-           $image = $request->file('image'); 
-           $imageName = time() . '_' . $image->getClientOriginalName(); 
-           $imagePath = $image->storeAs('uploads/categories', $imageName, 'public'); 
-           $category->image = $imagePath; 
-       } 
- 
-       $category->save(); 
- 
-       return redirect()->back() 
-           ->with( 
-               [ 
-                   'successMessage'=>'Data Berhasil Diperbarui!' 
-               ] 
-           ); 
-   } 
+    $validator = \Validator::make($request->all(), [ 
+        'name' => 'required|string|max:255', 
+        'slug' => 'required|string|max:255', 
+        'description' => 'required' 
+    ]);
+    //check if validation fails 
+    if ($validator->fails()) { 
+        return response()->json($validator->errors(), 422); 
+    } 
+
+    $category = Categories::find($id); 
+    $category->name = $request->name; 
+    $category->slug = $request->slug; 
+    $category->description = $request->description; 
+
+    if ($request->hasFile('image')) { 
+        $image = $request->file('image'); 
+        $imageName = time() . '_' . $image->getClientOriginalName(); 
+        $imagePath = $image->storeAs('uploads/categories', $imageName, 'public'); 
+        $category->image = $imagePath; 
+    }
+
+    $category->save();
+        return redirect()->route('categories.index')->with('success', 'Product Category Updated Successfully');
+   }
  
    /** 
     * Remove the specified resource from storage. 
     */ 
    public function destroy(string $id) 
    { 
-       $category = Categories::find($id); 
- 
-       $category->delete(); 
- 
-       return redirect()->back() 
-           ->with( 
-               [ 
-                   'successMessage'=>'Data Berhasil Dihapus' 
-               ] 
-           ); 
-   } 
+        $category = Categories::findOrFail($id); 
+        $category->delete(); 
+
+        return redirect()->route('categories.index')->with('success', 'Product Category Deleted Successfully');
+   }
 } 

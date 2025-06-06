@@ -37,49 +37,54 @@ class ProductController extends Controller
      */
 
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'category_id' => 'required|exists:product_categories,id',
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:products',
-            'description' => 'nullable|string',
-            'sku' => 'required|string|max:50|unique:products,sku',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_active' => 'required|boolean',
-        ], [
-            'sku.unique' => 'SKU sudah digunakan, silakan masukkan SKU yang berbeda.',
-            'slug.unique' => 'Slug sudah digunakan, silakan masukkan Slug yang berbeda.',
-        ]);
-
-        $product = new Product();
-        $product->category_id = $request->category_id;
-        $product->name = $request->name;
-        $product->slug = $request->slug;
-        $product->description = $request->description;
-        $product->sku = $request->sku;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-        $product->is_active = $request->is_active;
-
-        if ($request->hasFile('image_url')) {
-            $imagePath = $request->file('image_url')->store('uploads/products', 'public');
-            $product->image_url = $imagePath;
-        }
-
-        $product->save();
-
-        return redirect()->route('products.index')->with('successMessage', 'Produk berhasil ditambahkan!');
+    public function store(Request $request) 
+    { 
+        $validator = \Validator::make($request->all(), [ 
+            'name' => 'required|string|max:255', 
+            'slug' => 'required|string|max:255|unique:products,slug', 
+            'sku' => 'required|string|unique:products,sku', 
+            'price' => 'required|numeric|min:0', 
+            'stock' => 'required|integer|min:0', 
+            'product_category_id' => 'nullable|exists:product_categories,id', 
+            'description' => 'nullable|string', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',  
+        ]); 
+    
+        //check if validation fails 
+        if ($validator->fails()) { 
+            return response()->json($validator->errors(), 422); 
+        } 
+    
+        $product = new Product; 
+        $product->name = $request->name; 
+        $product->slug = $request->slug; 
+        $product->description = $request->description; 
+        $product->sku = $request->sku; 
+        $product->price = $request->price; 
+        $product->stock = $request->stock; 
+        $product->product_category_id = $request->product_category_id; 
+        $product->is_active = $request->has('is_active') ? $request->is_active : true; 
+    
+        if ($request->hasFile('image')) { 
+            $image = $request->file('image'); 
+            $imageName = time() . '_' . $image->getClientOriginalName(); 
+            $imagePath = $image->storeAs('uploads/products', $imageName, 'public'); 
+            $product->image_url = $imagePath; 
+        } 
+    
+        $product->save(); 
+    
+        return new ProductResource($product, 201, 'Product Category Created Successfully'); 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::findOrFail($id);
+
+        return new ProductResource($product, 200, 'Product Details'); 
     }
 
     /**
@@ -96,47 +101,52 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'category_id' => 'required|exists:product_categories,id',
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:products,slug,' . $id,
-            'description' => 'nullable|string',
-            'sku' => 'required|string|max:50',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_active' => 'required|boolean',
-        ]);
-
-        $product = Product::findOrFail($id);
-        $product->category_id = $request->category_id;
-        $product->name = $request->name;
-        $product->slug = $request->slug;
-        $product->description = $request->description;
-        $product->sku = $request->sku;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-        $product->is_active = $request->is_active;
-
-    if ($request->hasFile('image_url')) {
-    $image = $request->file('image_url');
-    $imageName = time() . '_' . $image->getClientOriginalName();
-    $imagePath = $image->storeAs('uploads/products', $imageName, 'public');
-    $product->image_url = $imagePath;
-}
-
-    $product->save();
-    return redirect()->route('products.index')->with('successMessage', 'Produk berhasil diperbarui!');
+    { 
+        $product = Product::findOrFail($id); 
+    
+        $validator = \Validator::make($request->all(), [ 
+            'name' => 'required|string|max:255', 
+            'slug' => 'required|string|max:255|unique:products,slug,' . $product->id, 
+            'description' => 'nullable|string', 
+            'sku' => 'required|string|unique:products,sku,' . $product->id, 
+            'price' => 'required|numeric|min:0', 
+            'stock' => 'required|integer|min:0', 
+            'product_category_id' => 'nullable|exists:product_categories,id', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'is_active' => 'boolean', 
+        ]); 
+    
+        if ($validator->fails()) { 
+            return response()->json($validator->errors(), 422); 
+        } 
+    
+        $product->name = $request->name; 
+        $product->slug = $request->slug; 
+        $product->description = $request->description; 
+        $product->sku = $request->sku; 
+        $product->product_category_id = $request->product_category_id; 
+        $product->is_active = $request->has('is_active') ? $request->is_active : true; 
+    
+        if ($request->hasFile('image')) { 
+            $image = $request->file('image'); 
+            $imageName = time() . '_' . $image->getClientOriginalName(); 
+            $imagePath = $image->storeAs('uploads/products', $imageName, 'public'); 
+            $product->image_url = $imagePath; 
+        } 
+    
+        $product->save(); 
+    
+        return new ProductResource($product, 201, 'Product Updated Successfully'); 
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        return redirect()->route('products.index')->with('successMessage', 'Produk berhasil dihapus!');
+    public function destroy($id) 
+    { 
+        $product = Product::findOrFail($id); 
+        $product->delete(); 
+
+        return response()->json(['success' => true, 'message' => 'Product Deleted Successfully']); 
     }
 }

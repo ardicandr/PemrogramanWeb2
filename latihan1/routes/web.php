@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController; 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerAuthController; 
  
 //kode baru diubah menjadi seperti ini 
 Route::get('/', [HomepageController::class, 'index'])->name('home'); 
@@ -19,13 +20,45 @@ Route::get('checkout', [HomepageController::class, 'checkout']);
 Route::get('/product/{slug}', [HomepageController::class, 'productDetail']);
 Route::get('/category/{slug}', [CategoryController::class, 'show']);
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
+
+Route::apiResource('/product-categories', ProductCategoryController::class)->only('index','store'); 
+Route::apiResource('/products', ProductController::class)->only('index','store');
+
+Route::apiResource('/product-categories', ProductCategoryController::class)->only('index','store','show'); 
+Route::apiResource('/products', ProductController::class)->only('index','store','show');
+
+Route::apiResource('/product-categories', ProductCategoryController::class)->only('index','store','show','update','destroy'); 
+Route::apiResource('/products', ProductController::class)->only('index','store','show','update','destroy');
  
+Route::group(['prefix'=>'customer'], function(){ 
+    Route::controller(CustomerAuthController::class)->group(function(){ 
+        Route::group(['middleware'=>'check_customer_login'], function(){ 
+            //tampilkan halaman login 
+            Route::get('login','login')->name('customer.login'); 
  
-Route::group(['prefix'=>'dashboard'], function(){ 
-   Route::get('/',[DashboardController::class,'index'])->name('dashboard'); 
-   Route::resource('categories',ProductCategoryController::class);
+            //aksi login 
+            Route::post('login','store_login')->name('customer.store_login'); 
+ 
+            //tampilkan halaman register 
+            Route::get('register','register')->name('customer.register'); 
+ 
+            //aksi register 
+            Route::post('register','store_register')->name('customer.store_register'); 
+        }); 
+         
+ 
+        //aksi logout 
+        Route::post('logout','logout')->name('customer.logout'); 
+ 
+    }); 
+}); 
+
+
+Route::group(['prefix'=>'dashboard', 'middleware'=>['auth', 'verified']], function(){ 
+   Route::get('', [DashboardController::class,'index'])->name('dashboard'); 
+   Route::resource('categories', ProductCategoryController::class);
    Route::resource('products', ProductController::class);
-})->middleware(['auth', 'verified']); 
+});
  
 Route::middleware(['auth'])->group(function () { 
    Route::redirect('settings', 'settings/profile'); 
