@@ -1,62 +1,55 @@
 <div>
-  <nav class="navbar navbar-expand-lg bg-dark shadow-sm fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand neon-text" href="#">E-Commerce</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link neon-text active" aria-current="page" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link neon-text" href="#product">Product</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle neon-text" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Categories
-            </a>
-            <ul class="dropdown-menu bg-dark">
-              <li><a class="dropdown-item neon-text" href="/category/ACER">ACER</a></li>
-              <li><a class="dropdown-item neon-text" href="/category/ASUS">ASUS</a></li>
-              <li><a class="dropdown-item neon-text" href="/category/MSI">MSI</a></li>
-              <li><a class="dropdown-item neon-text" href="/category/LENOVO">LENOVO</a></li>
-              <li><a class="dropdown-item neon-text" href="/category/HP">HP</a></li>
-              <li><a class="dropdown-item neon-text" href="/category/AXIOO">AXIOO</a></li>
-            </ul>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-        <input id="navbar-search" class="form-control neon-input rounded-pill px-4 py-2" type="search" placeholder="Search..." aria-label="Search">
-        </form>
-
-         @if(auth()->guard('customer')->check()) 
-    <div class="dropdown"> 
-        <a class="btn btn-outline-secondary dropdown-toggle" 
-           href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" 
-           aria-expanded="false"> 
-            {{ Auth::guard('customer')->user()->name }} 
-        </a> 
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"> 
-            <li>
-                <a class="dropdown-item" href="/">Dashboard</a>
-            </li> 
-            <li> 
-                <form method="POST" action="{{ route('customer.logout') }}"> 
-                    @csrf 
-                    <button class="dropdown-item" type="submit">Logout</button> 
-                </form> 
-            </li>
-        </ul> 
-    </div>
-    @else 
-                    <a class="btn btn-outline-primary me-2" href="{{ route('customer.login') }}">Login</a> 
-                    <a class="btn btn-primary" href="{{ route('customer.register') }}">Register</a> 
-      @endif         
-      </div>
-    </div>
-  </nav>
+    <nav class="navbar navbar-expand-lg p-3" style="background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);">
+        <div class="container">
+            <a class="navbar-brand text-white" href="/">E-Commerce</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" aria-current="page" href="/">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/categories">Kategori</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/products">Produk</a>
+                    </li>
+                </ul>
+                <a href="{{ route('cart.index') }}" class="btn btn-outline-light me-2 position-relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ Cart::count() }}
+                    </span>
+                </a>
+                @if(auth()->guard('customer')->check())
+                    <div class="dropdown">
+                        <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ Auth::guard('customer')->user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="/">Dashboard</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('cart.index') }}">Keranjang Belanja</a>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('customer.logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item" type="submit">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <a class="btn btn-outline-light me-2" href="{{ route('customer.login') }}">Login</a>
+                    <a class="btn btn-light text-primary" href="{{ route('customer.register') }}">Register</a>
+                @endif
+            </div>
+        </div>
+    </nav>
 </div>
 
 <script>

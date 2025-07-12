@@ -21,6 +21,17 @@ Route::get('/product/{slug}', [HomepageController::class, 'productDetail']);
 Route::get('/category/{slug}', [CategoryController::class, 'show']);
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
 
+Route::get('cart', [HomepageController::class, 'cart'])->name('cart.index'); 
+Route::get('checkout', [HomepageController::class, 'checkout'])->name('checkout.index');
+
+Route::group(['middleware'=>['is_customer_login']], function(){ 
+    Route::controller(CartController::class)->group(function () { 
+        Route::post('cart/add', 'add')->name('cart.add'); 
+        Route::delete('cart/remove/{id}', 'remove')->name('cart.remove'); 
+        Route::patch('cart/update/{id}', 'update')->name('cart.update'); 
+    }); 
+});
+
 Route::apiResource('/product-categories', ProductCategoryController::class)->only('index','store'); 
 Route::apiResource('/products', ProductController::class)->only('index','store');
 

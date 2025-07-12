@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Binafy\LaravelCart\Cartable; 
 
-class Product extends Model
+class Product extends Model implements Cartable 
 {
     protected $fillable = [
         'category_id',
@@ -32,5 +33,9 @@ class Product extends Model
             return null;
         }
     }
-}
 
+    public function getPrice(): float 
+    { 
+        return $this->price; 
+    } 
+}
